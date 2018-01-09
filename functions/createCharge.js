@@ -2,18 +2,26 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 module.exports.handler = (event, context, callback) => {
   console.log('createCharge');
-  console.log(event);
-  const requestBody = JSON.parse(event.body);
-  console.log(requestBody);
 
-  const token = requestBody.token.id;
-  const amount = requestBody.charge.amount;
-  const currency = requestBody.charge.currency;
+  console.log('eventBody: ' + event.body);
+
+  const eventBodySplit = event.body.split('=');
+  console.log('eventBodySplit: ' + eventBodySplit);
+
+  const eventBodySplit1stItem = eventBodySplit[1];
+  console.log('eventBodySplit1stItem: ' + eventBodySplit1stItem);
+
+  /*const requestBody = JSON.parse(event.body);
+  console.log(requestBody);
+  */
+  const token = eventBodySplit1stItem; //requestBody.token.id;
+  const amount = 1434; //requestBody.charge.amount;
+  const currency = 'USD'; //requestBody.charge.currency;
 
   return stripe.charges.create({ // Create Stripe charge with token
     amount,
     currency,
-    description: 'Serverless Stripe Test charge',
+    description: 'Serverless Stripe Test charge Avram AWS',
     source: token,
   })
     .then((charge) => { // Success response
@@ -39,7 +47,7 @@ module.exports.handler = (event, context, callback) => {
         },
         body: JSON.stringify({
           error: err.message,
-        }),
+        })
       };
       callback(null, response);
     })
