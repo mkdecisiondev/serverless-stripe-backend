@@ -5,28 +5,36 @@ module.exports.handler = (event, context, callback) => {
 
   console.log('eventBody: ' + event.body);
 
+  const eventObj = {}
+
   const eventBodySplit = event.body.split('&');
   console.log('eventBodySplit: ' + eventBodySplit);
 
-  const amountEquals = eventBodySplit[0];
-  console.log('amountEquals: ' + amountEquals);
+  for(var i = 0; i < eventBodySplit.length; i++){
+    console.log('i is: ' + i);
 
-  const tokenEquals = eventBodySplit[1];
-  console.log('tokenEquals: ' + tokenEquals);
+    var pair = eventBodySplit[i];
+    console.log('pair: ' + pair);
 
-  const amountEqualsSplit = amountEquals.split('=');
-  console.log('amountEqualsSplit: ' + amountEqualsSplit);
+    var pairSplit= pair.split('=');
+    console.log('pairSplit: ' + pairSplit);
 
-  const tokenEqualsSplit = tokenEquals.split('=');
-  console.log('tokenEqualsSplit: ' + tokenEqualsSplit);
+    var key = pairSplit[0];
+    console.log('key: ' + key);
 
-  /*const requestBody = JSON.parse(event.body);
-  console.log(requestBody);
-  */
-  const token = tokenEqualsSplit[1]; //requestBody.token.id;
-  /* multiplied by 100 to convert dollars entered by donor, into pennies that stripe counts in */
-  const amount = amountEqualsSplit[1] * 100; //requestBody.charge.amount;
-  const currency = 'USD'; //requestBody.charge.currency;
+    var value = pairSplit[1];
+    console.log('value: ' + value);
+
+
+    eventObj[key] = value;
+  }
+
+  console.log('eventObj.stripeToken: ' + eventObj.stripeToken);
+  console.log('eventObj.amount: ' + eventObj.amount);
+
+  const token = eventObj.stripeToken;
+  const amount = eventObj.amount * 100; // multiplied by 100 to convert dollars entered by donor, into pennies that stripe counts in
+  const currency = 'USD'; //hard coded per Guru
 
   return stripe.charges.create({ // Create Stripe charge with token
     amount,
