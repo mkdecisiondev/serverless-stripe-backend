@@ -22,7 +22,7 @@ module.exports.handler = (event, context, callback) => {
     var key = pairSplit[0];
     console.log('key: ' + key);
 
-    var value = pairSplit[1];
+    var value = decodeURIComponent(pairSplit[1]);
     console.log('value: ' + value);
 
 
@@ -31,6 +31,7 @@ module.exports.handler = (event, context, callback) => {
 
   console.log('eventObj.stripeToken: ' + eventObj.stripeToken);
   console.log('eventObj.amount: ' + eventObj.amount);
+  console.log('eventObj.email: ' + JSON.stringify(eventObj.email));
 
   const token = eventObj.stripeToken;
   const amount = eventObj.amount * 100; // multiplied by 100 to convert dollars entered by donor, into pennies that stripe counts in
@@ -41,6 +42,8 @@ module.exports.handler = (event, context, callback) => {
     currency,
     description: 'Serverless Stripe Test charge Avram AWS',
     source: token,
+    receipt_email: eventObj.email,
+    metadata: {'email': eventObj.email, 'phone': eventObj.phone}
   })
     .then((charge) => { // Success response
       console.log(charge);
