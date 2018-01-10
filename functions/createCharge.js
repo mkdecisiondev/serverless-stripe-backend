@@ -5,17 +5,27 @@ module.exports.handler = (event, context, callback) => {
 
   console.log('eventBody: ' + event.body);
 
-  const eventBodySplit = event.body.split('=');
+  const eventBodySplit = event.body.split('&');
   console.log('eventBodySplit: ' + eventBodySplit);
 
-  const eventBodySplit1stItem = eventBodySplit[1];
-  console.log('eventBodySplit1stItem: ' + eventBodySplit1stItem);
+  const amountEquals = eventBodySplit[0];
+  console.log('amountEquals: ' + amountEquals);
+
+  const tokenEquals = eventBodySplit[1];
+  console.log('tokenEquals: ' + tokenEquals);
+
+  const amountEqualsSplit = amountEquals.split('=');
+  console.log('amountEqualsSplit: ' + amountEqualsSplit);
+
+  const tokenEqualsSplit = tokenEquals.split('=');
+  console.log('tokenEqualsSplit: ' + tokenEqualsSplit);
 
   /*const requestBody = JSON.parse(event.body);
   console.log(requestBody);
   */
-  const token = eventBodySplit1stItem; //requestBody.token.id;
-  const amount = 1434; //requestBody.charge.amount;
+  const token = tokenEqualsSplit[1]; //requestBody.token.id;
+  /* multiplied by 100 to convert dollars entered by donor, into pennies that stripe counts in */
+  const amount = amountEqualsSplit[1] * 100; //requestBody.charge.amount;
   const currency = 'USD'; //requestBody.charge.currency;
 
   return stripe.charges.create({ // Create Stripe charge with token
