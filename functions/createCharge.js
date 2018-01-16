@@ -29,12 +29,20 @@ module.exports.handler = (event, context, callback) => {
     eventObj[key] = value;
   }
 
+  console.log('eventObj.amount typeof: ' + typeof(eventObj.amount));
+
+  let actualAmount = eventObj.amount;
+
+  if((eventObj.amount == undefined || eventObj.amount == "") && eventObj.amount_prefilled >= 1){
+    actualAmount = eventObj.amount_prefilled;
+  }
+
   console.log('eventObj.stripeToken: ' + eventObj.stripeToken);
   console.log('eventObj.amount: ' + eventObj.amount);
   console.log('eventObj.email: ' + JSON.stringify(eventObj.email));
 
   const token = eventObj.stripeToken;
-  const amount = eventObj.amount * 100; // multiplied by 100 to convert dollars entered by donor, into pennies that stripe counts in
+  const amount = actualAmount * 100; // multiplied by 100 to convert dollars entered by donor, into pennies that stripe counts in
   const currency = 'USD'; //hard coded per Guru
 
   return stripe.charges.create({ // Create Stripe charge with token
