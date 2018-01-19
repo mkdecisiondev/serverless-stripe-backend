@@ -42,42 +42,89 @@ module.exports.handler = (event, context, callback) => {
   console.log('eventObj.email: ' + JSON.stringify(eventObj.email));
 
   const token = eventObj.stripeToken;
-  const amount = actualAmount * 100; // multiplied by 100 to convert dollars entered by donor, into pennies that stripe counts in
+  const amount = Math.floor(actualAmount * 100); // multiplied by 100 to convert dollars entered by donor, into pennies that stripe counts in
   const currency = 'USD'; //hard coded per Guru
 
-  return stripe.charges.create({ // Create Stripe charge with token
-    amount,
-    currency,
-    description: 'Serverless Stripe Test charge Avram AWS',
-    source: token,
-    receipt_email: eventObj.email,
-    metadata: {'email': eventObj.email, 'phone': eventObj.phone}
-  })
-    .then((charge) => { // Success response
-      console.log(charge);
-      const response = {
-        statusCode: 200,
-        headers: {
-          'Access-Control-Allow-Origin': '*',
-        },
-        body: JSON.stringify({
-          message: `Charge processed succesfully!`,
-          charge,
-        }),
-      };
-      callback(null, response);
-    })
-    .catch((err) => { // Error response
-      console.log(err);
-      const response = {
-        statusCode: 500,
-        headers: {
-          'Access-Control-Allow-Origin': '*',
-        },
-        body: JSON.stringify({
-          error: err.message,
-        })
-      };
-      callback(null, response);
-    })
-};
+	console.log('eventObj.redirect: ' + eventObj.redirect);
+	if(eventObj.redirect){
+		console.log('eventObj.redirect is true');
+		return stripe.charges.create({ // Create Stripe charge with token
+			amount,
+			currency,
+			description: 'Serverless Stripe Test charge Avrams AWS',
+			source: token,
+			receipt_email: eventObj.email,
+			metadata: {'email': eventObj.email, 'phone': eventObj.phone}
+		  })
+			.then((charge) => { // Success response
+			  console.log(charge);
+
+			  const response = {
+				statusCode: 302,
+				headers: { Location: eventObj.redirect,},
+				/*body: JSON.stringify({
+				  message: `AWS: Charge processed successfully!`,
+				  charge,
+				}),*/
+
+			  };
+
+			  callback(null, response);
+			})
+			.catch((err) => { // Error response
+			  console.log(err);
+			  const response = {
+				statusCode: 500,
+				headers: {
+				  'Access-Control-Allow-Origin': '*',
+				},
+				body: JSON.stringify({
+				  error: err.message,
+				})
+			  };
+			  callback(null, response);
+			}) /* catch */
+	} else {
+		console.log('eventObj.redirect is false');
+		return stripe.charges.create({ // Create Stripe charge with token
+			amount,
+			currency,
+			description: 'Serverless Stripe Test charge Avrams AWS',
+			source: token,
+			receipt_email: eventObj.email,
+			metadata: {'email': eventObj.email, 'phone': eventObj.phone}
+		  })
+			.then((charge) => { // Success response
+			  console.log(charge);
+
+			  const response = {
+				statusCode: 200,
+				headers: {
+				  'Access-Control-Allow-Origin': '*',
+				},
+				body: JSON.stringify({
+				  message: `AWS: Charge processed successfully!`,
+				  charge,
+				}),
+
+			  };
+
+			  callback(null, response);
+			})
+			.catch((err) => { // Error response
+			  console.log(err);
+			  const response = {
+				statusCode: 500,
+				headers: {
+				  'Access-Control-Allow-Origin': '*',
+				},
+				body: JSON.stringify({
+				  error: err.message,
+				})
+			  };
+			  callback(null, response);
+			}) /* catch */
+	}
+
+
+}; /* module.export */
