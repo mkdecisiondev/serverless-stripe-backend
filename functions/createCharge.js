@@ -54,7 +54,7 @@ module.exports.handler = (event, context, callback) => {
 			description: 'Serverless Stripe Test charge Avrams AWS',
 			source: token,
 			receipt_email: eventObj.email,
-			metadata: {'email': eventObj.email, 'phone': eventObj.phone}
+			metadata: {'email': eventObj.email, 'phone': eventObj.phone, 'optional_message': eventObj.optional_message}
 		  })
 			.then((charge) => { // Success response
 			  console.log(charge);
@@ -92,7 +92,7 @@ module.exports.handler = (event, context, callback) => {
 			description: 'Serverless Stripe Test charge Avrams AWS',
 			source: token,
 			receipt_email: eventObj.email,
-			metadata: {'email': eventObj.email, 'phone': eventObj.phone}
+			metadata: {'email': eventObj.email, 'phone': eventObj.phone, 'optional_message': eventObj.optional_message}
 		  })
 			.then((charge) => { // Success response
 			  console.log(charge);
